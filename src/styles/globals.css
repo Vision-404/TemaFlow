@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TeamFlow Design System - CSS Custom Properties */
+:root {
+  /* Light Theme */
+  --background: 210 20% 98%;
+  --foreground: 210 10% 20%;
+  --card: 0 0% 100%;
+  --card-foreground: 210 10% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 210 10% 18%;
+  --primary: 210 80% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 10% 96%;
+  --secondary-foreground: 210 10% 20%;
+  --muted: 210 10% 96%;
+  --muted-foreground: 210 10% 40%;
+  --accent: 210 80% 55%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 61%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 20% 90%;
+  --input: 210 20% 90%;
+  --ring: 210 80% 55%;
+
+  /* Light theme specific */
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 210 10% 18%;
+  --sidebar-accent: 210 80% 55%;
+}
+
+/* Dark Theme */
+.data-theme="dark" {
+  --background: 210 12% 6%;
+  --foreground: 0 0% 93%;
+  --card: 210 12% 10%;
+  --card-foreground: 0 0% 93%;
+  --popover: 210 12% 10%;
+  --popover-foreground: 0 0% 93%;
+  --primary: 210 80% 60%;
+  --primary-foreground: 210 10% 10%;
+  --secondary: 210 12% 15%;
+  --secondary-foreground: 0 0% 93%;
+  --muted: 210 10% 15%;
+  --muted-foreground: 210 10% 60%;
+  --accent: 210 80% 60%;
+  --accent-foreground: 210 10% 10%;
+  --destructive: 0 84% 61%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 10% 20%;
+  --input: 210 10% 22%;
+  --ring: 210 80% 60%;
+
+  /* Dark theme specific */
+  --sidebar-background: 210 12% 10%;
+  --sidebar-foreground: 0 0% 93%;
+  --sidebar-accent: 210 80% 60%;
+}
+
+/* System preference - if no theme attribute */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: 210 12% 6%;
+    --foreground: 0 0% 93%;
+    --card: 210 12% 10%;
+    --card-foreground: 0 0% 93%;
+    --popover: 210 12% 10%;
+    --popover-foreground: 0 0% 93%;
+    --primary: 210 80% 60%;
+    --primary-foreground: 210 10% 10%;
+    --secondary: 210 12% 15%;
+    --secondary-foreground: 0 0% 93%;
+    --muted: 210 10% 15%;
+    --muted-foreground: 210 10% 60%;
+    --accent: 210 80% 60%;
+    --accent-foreground: 210 10% 10%;
+    --destructive: 0 84% 61%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 10% 20%;
+    --input: 210 10% 22%;
+    --ring: 210 80% 60%;
+
+    --sidebar-background: 210 12% 10%;
+    --sidebar-foreground: 0 0% 93%;
+    --sidebar-accent: 210 80% 60%;
+  }
+}
+
+/* CSS Transitions */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+body {
+  @apply font-sans text-[color:var(--foreground)] bg-[color:var(--background)];
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--border));
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--ring));
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
