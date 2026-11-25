@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Hash, MessageCircle, Users, Shield, ChevronDown } from "lucide-react"
@@ -58,8 +59,8 @@ export function ChannelList({ currentChannelId }: ChannelListProps) {
             <TooltipProvider key={channel.id}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <a
-                    href={`#${channel.id}`}
+                  <Link
+                    href={`/channels/${channel.id}`}
                     className={cn(
                       "flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium",
                       "hover:bg-accent hover:text-accent-foreground",
@@ -73,7 +74,7 @@ export function ChannelList({ currentChannelId }: ChannelListProps) {
                     {channel.isPrivate && (
                       <Shield className="ml-auto h-3 w-3 opacity-60" />
                     )}
-                  </a>
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">
                   {channel.isGeneral ? "General channel (default)" : `#${channel.name}`}
@@ -110,8 +111,8 @@ export function ChannelList({ currentChannelId }: ChannelListProps) {
               <TooltipProvider key={channel.id}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <a
-                      href={`#${channel.id}`}
+                    <Link
+                      href={`/channels/${channel.id}`}
                       className={cn(
                         "flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium",
                         "hover:bg-accent hover:text-accent-foreground",
@@ -131,7 +132,7 @@ export function ChannelList({ currentChannelId }: ChannelListProps) {
                           YOU
                         </Badge>
                       )}
-                    </a>
+                    </Link>
                   </TooltipTrigger>
                   <TooltipContent side="right">
                     {channel.type === "dm" ? `DM with ${channel.name}` : `#${channel.name}`}
