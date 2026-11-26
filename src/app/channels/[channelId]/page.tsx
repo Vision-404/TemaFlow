@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { MainLayout } from "@/components/layout/main-layout"
 import { ChannelHeader } from "@/components/messaging/channel-header"
 
@@ -13,7 +15,7 @@ async function getChannel(channelId: string) {
       apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
     },
-    next: { revalidate: 60 },
+    cache: 'no-store'
   })
   if (!response.ok) return null
   const data = await response.json()
@@ -26,7 +28,7 @@ async function getChannelMessages(channelId: string) {
       apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
     },
-    next: { revalidate: 60 },
+    cache: 'no-store'
   })
   if (!response.ok) return []
   return await response.json()

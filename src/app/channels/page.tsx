@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { MainLayout } from "@/components/layout/main-layout"
 import { ChannelHeader } from "@/components/messaging/channel-header"
 
@@ -19,7 +21,8 @@ async function getChannels(): Promise<Channel[]> {
       apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
     },
-    next: { revalidate: 60 },
+    // We remove the revalidate or set to 0, and use dynamic to avoid build-time fetch
+    cache: 'no-store'
   })
 
   if (!response.ok) return []
