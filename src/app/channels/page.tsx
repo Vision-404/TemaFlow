@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation"
 import { MainLayout } from "@/components/layout/main-layout"
 import { ChannelHeader } from "@/components/messaging/channel-header"
 
@@ -42,15 +41,24 @@ export default async function ChannelsPage() {
     )
   }
 
-  // Get the general channel ID
+  // Get the default channel safely
   const generalChannel = channels.find(c => c.is_general)
-  const defaultChannelId = generalChannel?.id || channels[0].id
   const defaultChannel = generalChannel || channels[0]
+
+  if (!defaultChannel) {
+    return (
+      <MainLayout>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">No channels available</p>
+        </div>
+      </MainLayout>
+    )
+  }
 
   return (
     <MainLayout>
       <ChannelHeader
-        channelId={defaultChannelId}
+        channelId={defaultChannel.id}
         channelName={defaultChannel.name}
         channelType={defaultChannel.is_private ? "private" : "public"}
       />
