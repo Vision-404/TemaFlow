@@ -12,26 +12,42 @@ export type AuthUser = {
 /**
  * Sign up a new user
  */
-export const signUp = async (email: string, password: string, fullName: string) => {
+export const signUp = async (email: string, pwd: string, fullName: string) => {
   const { data, error } = await supabase.auth.signUp({
     email,
-    password,
+    password: pwd,
     options: {
       data: { full_name: fullName },
     },
   })
 
   if (error) throw error
+
+  // Create user profile in the users table
+  if (data.user) {
+    const { error: profileError } = await supabase.from("users").insert({
+      id: data.user.id,
+      email: data.user.email,
+      full_name: fullName,
+      avatar_url: data.user.user_metadata?.avatar_url || null,
+    })
+
+    if (profileError && profileError.code !== "23505") {
+      // 23505 = unique_violation, profile already exists — ignore
+      console.error("Profile insert error:", profileError)
+    }
+  }
+
   return data
 }
 
 /**
  * Sign in a user
  */
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (email: string, pwd: string) => {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-    password,
+    password: pwd,
   })
 
   if (error) throw error
@@ -114,7 +130,7 @@ export const updateProfile = async (updates: Partial<{
   full_name: string
   avatar_url: string
   role: "owner" | "admin" | "member" | "guest"
-}>) => {
+}>)) => {
   const { data, error } = await supabase.auth.updateUser({
     data: updates,
   })
