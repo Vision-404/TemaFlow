@@ -106,7 +106,7 @@
 }
 
 body {
-  @apply font-sans text-[color:var(--foreground)] bg-[color:var(--background)];
+  @apply font-sans text-foreground bg-background;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

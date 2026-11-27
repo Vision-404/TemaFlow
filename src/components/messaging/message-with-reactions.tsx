@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Heart, ThumbsUp, Smile } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
@@ -47,22 +47,43 @@ export function MessageWithReactions({
   const [hasReacted, setHasReacted] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // Fetch existing reactions on mount
+  useEffect(() => {
+    const fetchReactions = async () => {
+      const { data, error } = await (supabase as any)
+        .from("message_reactions")
+        .select("*")
+        .eq("message_id", messageId)
+
+      if (!error && data) {
+        setReactions(data as Reaction[])
+      }
+
+      // Check if current user has reacted
+      const userReaction = (data as Reaction[] | null)?.find(
+        (r) => r.user_id === currentUserId
+      )
+      if (userReaction) {
+        setHasReacted(userReaction.emoji)
+      }
+    }
+
+    fetchReactions()
+  }, [messageId, currentUserId])
+
   const handleReaction = async (emoji: string) => {
     if (loading) return
 
     setLoading(true)
     try {
-      const { error } = await (supabase as any)
-        .from("message_reactions")
-        .insert({
-          message_id: messageId,
-          user_id: currentUserId,
-          emoji,
-        })
+      // Check if user already reacted with this emoji
+      const existingReaction = reactions.find(
+        (r) => r.user_id === currentUserId && r.emoji === emoji
+      )
 
-      if (error) throw error
+      let newReactions: Reaction[]
 
-      if (hasReacted) {
+      if (existingReaction) {
         // Remove reaction
         const { error: deleteError } = await (supabase as any)
           .from("message_reactions")
@@ -72,21 +93,35 @@ export function MessageWithReactions({
           .eq("emoji", emoji)
 
         if (deleteError) throw deleteError
+
+        newReactions = reactions.filter((r) => r.id !== existingReaction.id)
+        setHasReacted(null)
+      } else {
+        // Add reaction
+        const { error: insertError } = await (supabase as any)
+          .from("message_reactions")
+          .insert({
+            message_id: messageId,
+            user_id: currentUserId,
+            emoji,
+          })
+
+        if (insertError) throw insertError
+
+        // Fetch updated reactions
+        const { data, error: fetchError } = await (supabase as any)
+          .from("message_reactions")
+          .select("*")
+          .eq("message_id", messageId)
+
+        if (fetchError) throw fetchError
+        newReactions = data as Reaction[]
+        setHasReacted(emoji)
       }
 
-      setHasReacted(emoji)
-
-      // Fetch updated reactions
-      const { data, error: fetchError } = await (supabase as any)
-        .from("message_reactions")
-        .select("*")
-        .eq("message_id", messageId)
-
-      if (!fetchError && data) {
-        setReactions(data as Reaction[])
-      }
+      setReactions(newReactions)
     } catch (error) {
-      console.error("Error adding reaction:", error)
+      console.error("Error toggling reaction:", error)
     } finally {
       setLoading(false)
     }
@@ -99,7 +134,7 @@ export function MessageWithReactions({
   }, {} as Record<string, number>)
 
   return (
-    <div className="border-b border-border pb-2">
+    <div className="border-b border-border pb-2 last:border-b-0">
       <div className="flex items-start gap-3">
         <Avatar className="h-8 w-8">
           <AvatarImage src={authorInfo.avatar_url || ""} alt={authorInfo.full_name || ""} />
@@ -116,40 +151,44 @@ export function MessageWithReactions({
             </span>
           </div>
 
-          <p className="mt-1 text-sm">{content}</p>
+          <p className="mt-1 text-sm break-words">{content}</p>
 
           {/* Reactions Bar */}
-          <div className="flex items-center gap-2 mt-2">
-            {Object.entries(reactionCounts).map(([emoji, count]) => {
-              const reactionInfo = quickReactions.find(r => r.emoji === emoji) || { emoji, label: emoji, icon: Smile, isLucide: true }
-              const Icon = reactionInfo.isLucide ? reactionInfo.icon as React.ElementType : undefined
-              const isOwn = hasReacted === emoji
+          {Object.keys(reactionCounts).length > 0 && (
+            <div className="flex items-center gap-1 mt-2 flex-wrap">
+              {Object.entries(reactionCounts).map(([emoji, count]) => {
+                const reactionInfo = quickReactions.find(r => r.emoji === emoji) || { emoji, label: emoji, icon: Smile, isLucide: true }
+                const Icon = reactionInfo.isLucide ? reactionInfo.icon as React.ElementType : undefined
+                const isOwn = hasReacted === emoji
 
-              return (
-                <TooltipProvider key={emoji}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => handleReaction(emoji)}
-                        disabled={loading}
-                        className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded-full transition-colors ${
-                          isOwn
-                            ? "bg-primary/10 text-primary"
-                            : "hover:bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {Icon ? <Icon className="h-3 w-3" /> : <span className="text-lg">{emoji}</span>}
-                        <span>{count}</span>
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{reactionInfo.label}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )
-            })}
-          </div>
+                return (
+                  <div key={emoji} className="relative">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => handleReaction(emoji)}
+                            disabled={loading}
+                            className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded-full transition-all duration-200 ${
+                              isOwn
+                                ? "bg-primary/10 text-primary ring-1 ring-primary/20"
+                                : "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
+                            }`}
+                          >
+                            {Icon ? <Icon className="h-3 w-3" /> : <span className="text-sm">{emoji}</span>}
+                            <span>{count}</span>
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          {reactionInfo.label}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

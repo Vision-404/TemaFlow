@@ -1,5 +1,7 @@
 "use client"
 
+"use client"
+
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import {
@@ -13,7 +15,7 @@ import {
   User,
   LogOut,
 } from "lucide-react"
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 interface NavItem {
@@ -53,7 +55,39 @@ export function Sidebar({ className }: SidebarProps) {
 
   const toggleCollapse = () => setIsCollapsed(!isCollapsed)
 
-  const activeNavItems = mainNavItems
+  const renderNavItem = (item: NavItem) => (
+    <TooltipProvider key={item.name}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <a
+            href={item.href}
+            className={cn(
+              "flex items-center px-3 py-2 text-sm rounded-md transition-colors duration-200",
+              "hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+              item.isActive && "bg-accent text-accent-foreground",
+              isCollapsed && "justify-center"
+            )}
+            aria-current={item.isActive ? "page" : undefined}
+          >
+            <item.icon className="h-5 w-5" aria-hidden="true" />
+            {!isCollapsed && (
+              <span className="ml-3">{item.name}</span>
+            )}
+            {item.isNew && !isCollapsed && (
+              <span className="ml-auto text-xs bg-primary-200 text-primary-800 px-1.5 py-0.5 rounded-full">
+                NEW
+              </span>
+            )}
+          </a>
+        </TooltipTrigger>
+        {isCollapsed ? (
+          <TooltipContent side="right" className="whitespace-nowrap">
+            {item.name}
+          </TooltipContent>
+        ) : undefined}
+      </Tooltip>
+    </TooltipProvider>
+  )
 
   return (
     <aside
@@ -67,13 +101,13 @@ export function Sidebar({ className }: SidebarProps) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">TF</span>
+            <span className="text-primary-foreground font-bold text-sm" aria-label="TeamFlow logo">TF</span>
           </div>
           {!isCollapsed && <span className="font-semibold text-lg">TeamFlow</span>}
         </div>
         <button
           onClick={toggleCollapse}
-          className="p-1 rounded-full hover:bg-accent transition-colors"
+          className="p-1 rounded-full hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -93,89 +127,18 @@ export function Sidebar({ className }: SidebarProps) {
       )}
 
       {/* Main Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-1">
-        {activeNavItems.map((item) => (
-          <Tooltip key={item.name}>
-            <TooltipTrigger asChild>
-              <a
-                href={item.href}
-                className={cn(
-                  "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
-                  "hover:bg-accent hover:text-accent-foreground",
-                  item.isActive && "bg-accent text-accent-foreground",
-                  isCollapsed && "justify-center"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {!isCollapsed && (
-                  <span className="ml-3">{item.name}</span>
-                )}
-                {item.isNew && !isCollapsed && (
-                  <span className="ml-auto text-xs bg-primary-200 text-primary-800 px-1.5 py-0.5 rounded-full">
-                    NEW
-                  </span>
-                )}
-              </a>
-            </TooltipTrigger>
-            {!isCollapsed && (
-              <TooltipContent side="right">
-                {item.name}
-              </TooltipContent>
-            )}
-          </Tooltip>
-        ))}
+      <nav className="flex-1 px-2 py-4 space-y-1" aria-label="Main navigation">
+        {mainNavItems.map(renderNavItem)}
       </nav>
 
       {/* Admin Section (conditional) */}
-      <nav className="px-2 py-4 space-y-1 border-t border-border">
-        {adminNavItems.map((item) => (
-          <Tooltip key={item.name}>
-            <TooltipTrigger asChild>
-              <a
-                href={item.href}
-                className={cn(
-                  "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
-                  "hover:bg-accent hover:text-accent-foreground",
-                  isCollapsed && "justify-center"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {!isCollapsed && <span className="ml-3">{item.name}</span>}
-              </a>
-            </TooltipTrigger>
-            {!isCollapsed && (
-              <TooltipContent side="right">
-                {item.name}
-              </TooltipContent>
-            )}
-          </Tooltip>
-        ))}
+      <nav className="px-2 py-4 space-y-1 border-t border-border" aria-label="Admin navigation">
+        {adminNavItems.map(renderNavItem)}
       </nav>
 
       {/* Bottom Navigation */}
-      <nav className="px-2 py-4 space-y-1 border-t border-border">
-        {bottomNavItems.map((item) => (
-          <Tooltip key={item.name}>
-            <TooltipTrigger asChild>
-              <a
-                href={item.href}
-                className={cn(
-                  "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
-                  "hover:bg-accent hover:text-accent-foreground",
-                  isCollapsed && "justify-center"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {!isCollapsed && <span className="ml-3">{item.name}</span>}
-              </a>
-            </TooltipTrigger>
-            {!isCollapsed && (
-              <TooltipContent side="right">
-                {item.name}
-              </TooltipContent>
-            )}
-          </Tooltip>
-        ))}
+      <nav className="px-2 py-4 space-y-1 border-t border-border" aria-label="User navigation">
+        {bottomNavItems.map(renderNavItem)}
       </nav>
 
       {/* Theme Toggle */}

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 
 const cardVariants = {
   default: "bg-card text-card-foreground border shadow-sm",
-  interactive: "bg-card border_shadow-sm hover:shadow-md transition-shadow",
+  interactive: "bg-card border shadow-sm hover:shadow-md transition-shadow",
 }
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {

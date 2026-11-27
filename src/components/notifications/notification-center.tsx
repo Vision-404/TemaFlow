@@ -210,18 +210,18 @@ export function NotificationCenter({ currentUserId }: NotificationCenterProps) {
                   <div
                     key={notification.id}
                     className={cn(
-                      "flex items-start gap-3 p-3 hover:bg-accent/50 transition-colors",
-                      !notification.is_read && "bg-accent/10"
+                      "flex items-start gap-3 p-3 hover:bg-accent/50 transition-colors duration-200",
+                      !notification.is_read && "bg-accent/30 border-l-2 border-primary"
                     )}
                   >
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
-                          <Icon className="h-4 w-4 opacity-60" />
+                          <Icon className="h-4 w-4 opacity-60" aria-hidden="true" />
                           <span
                             className={cn(
-                              "font-medium text-sm cursor-pointer",
-                              !notification.is_read && "font-semibold"
+                              "font-medium text-sm cursor-pointer hover:underline",
+                              !notification.is_read && "text-foreground"
                             )}
                             onClick={() => markAsRead(notification.id)}
                           >
@@ -229,21 +229,21 @@ export function NotificationCenter({ currentUserId }: NotificationCenterProps) {
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          {!notification.is_read && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-                              onClick={() => markAsRead(notification.id)}
-                            >
-                              <Check className="h-3 w-3" />
-                            </Button>
-                          )}
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+                            className="h-6 w-6 p-0 opacity-50 hover:opacity-100 focus:opacity-100 focus:ring-2 focus:ring-primary"
+                            onClick={() => markAsRead(notification.id)}
+                            aria-label="Mark as read"
+                          >
+                            <Check className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 opacity-50 hover:opacity-100 focus:opacity-100 focus:ring-2 focus:ring-destructive"
                             onClick={() => deleteNotification(notification.id)}
+                            aria-label="Delete notification"
                           >
                             <X className="h-3 w-3" />
                           </Button>

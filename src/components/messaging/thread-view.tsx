@@ -1,7 +1,5 @@
 "use client"
 
-"use client"
-
 import { useState, useEffect } from "react"
 import { MessageWithReactions } from "@/components/messaging/message-with-reactions"
 import { Button } from "@/components/ui/button"
@@ -100,14 +98,26 @@ export function ThreadView({
       .channel(`thread_replies:${messageId}`)
       .on(
         "postgres_changes",
-       {
+        {
           event: "INSERT",
           schema: "public",
           table: "thread_replies",
           filter: `message_id=eq.${messageId}`,
         },
         (payload: { new: any }) => {
-          setReplies((prev) => [...prev, payload.new])
+          const newReply = payload.new
+          // Format the reply similar to fetchReplies
+          const formattedReply: ThreadReply = {
+            id: newReply.id,
+            content: newReply.content,
+            author: {
+              id: newReply.author?.id || newReply.author_id,
+              name: newReply.author?.full_name || "Anonymous",
+              avatar: newReply.author?.avatar_url || "",
+            },
+            timestamp: newReply.created_at,
+          }
+          setReplies((prev) => [...prev, formattedReply])
         }
       )
       .subscribe()
