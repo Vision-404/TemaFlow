@@ -107,7 +107,11 @@ export default function LoginPage() {
                 {error}
               </div>
             )}
-            <Button type="submit" className="w-full py-3 text-lg font-semibold hover:bg-primary/80 transition-all" disabled={isLoading}>
+            <Button
+            type="submit"
+            className="w-full py-3 text-lg font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-all"
+            disabled={isLoading}
+          >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />

@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:not-[-webkit-appearance:_none]-type-reset [&_svg:nth-child(1)]:-ml-2 [&_svg:last-child]:-mr-2 aria-[state=open]:bg-muted hover:cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg:nth-child(1)]:-ml-2 [&_svg:last-child]:-mr-2 aria-[state=open]:bg-muted hover:cursor-pointer",
   {
     variants: {
       variant: {
@@ -13,7 +13,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-destructive dark:text-destructive-foreground dark:hover:bg-destructive/90",
         outline:
-          "bg-transparent bg-backdrop dark:bg-card/50 dark:text-card-foreground border border-border hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 dark:border-border",
+          "bg-transparent dark:bg-card/50 dark:text-card-foreground border border-border hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 dark:border-border",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80",
         ghost:

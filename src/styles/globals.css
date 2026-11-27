@@ -32,7 +32,7 @@
 }
 
 /* Dark Theme */
-.data-theme="dark" {
+[data-theme="dark"] {
   --background: 210 12% 6%;
   --foreground: 0 0% 93%;
   --card: 210 12% 10%;
